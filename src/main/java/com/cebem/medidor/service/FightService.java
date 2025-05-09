@@ -1,6 +1,8 @@
 package com.cebem.medidor.service;
 
 import org.springframework.stereotype.Service;
+
+import com.cebem.medidor.models.FightResult;
 import com.cebem.medidor.models.Powerstats;
 import com.cebem.medidor.models.SuperHero;
 
@@ -13,7 +15,7 @@ public class FightService {
         this.superheroService = superheroService;
     }
 
-    public String fight() {
+    public FightResult generarPelea() {
         SuperHero heroe1 = superheroService.getRandomHero();
         SuperHero heroe2 = superheroService.getRandomHero();
 
@@ -29,10 +31,13 @@ public class FightService {
             resultado = heroe1.getName() + " y " + heroe2.getName() + " están empatados";
         }
 
-        return "▶ Pelea entre superhéroes:\n\n"
-             + "- " + heroe1.getName() + " (Puntuación: " + puntuacion1 + ")\n"
-             + "- " + heroe2.getName() + " (Puntuación: " + puntuacion2 + ")\n\n"
-             + "💥 Resultado: " + resultado;
+        return new FightResult( // Verifica que este constructor coincide con el de la clase FightResult
+            heroe1.getName(),
+            puntuacion1,
+            heroe2.getName(),
+            puntuacion2,
+            resultado
+        );
     }
 
     private int getPuntuacion(Powerstats stats) {

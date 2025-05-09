@@ -1,13 +1,15 @@
 package com.cebem.medidor.controllers;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
+import com.cebem.medidor.models.FightResult;
 import com.cebem.medidor.service.FightService;
 
-@RestController
-@RequestMapping("/api")
+@Controller
+@RequestMapping("/pelea")
 public class FightController {
 
     private final FightService fightService;
@@ -16,9 +18,17 @@ public class FightController {
         this.fightService = fightService;
     }
 
-    @GetMapping ("/fight")
-    public String fight() {
-        return fightService.fight();
+    @GetMapping
+    public String mostrarPelea(Model model) {
+        FightResult result = fightService.generarPelea(); // ver abajo
+
+        model.addAttribute("heroe1", result.getHeroe1());
+        model.addAttribute("puntuacion1", result.getPuntuacion1());
+        model.addAttribute("heroe2", result.getHeroe2());
+        model.addAttribute("puntuacion2", result.getPuntuacion2());
+        model.addAttribute("resultado", result.getResultado());
+
+        return "fight";
     }
 }
 
