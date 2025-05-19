@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lista de Misiones</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">🗺️ Misiones Disponibles</h1>
+    
+    <div class="row">
+      <div th:each="mision : ${misiones}" class="col-md-6">
+        <div class="card mb-4 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title" th:text="${mision.nombre}"></h5>
+            <p class="card-text">
+              <strong>Descripción:</strong> <span th:text="${mision.descripcion}"></span><br />
+              <strong>Dificultad:</strong> <span th:text="${mision.dificultad}"></span><br />
+              <strong>Recompensa:</strong> <span th:text="${mision.recompensa}"></span><br />
+              <strong>Fecha Inicio:</strong> <span th:text="${mision.fechaInicio}"></span><br />
+              <strong>Fecha Fin:</strong> <span th:text="${mision.fechaFin}"></span><br />
+              <strong>Resultado:</strong> <span th:text="${mision.resultado}"></span><br />
+              <strong>Robots Participantes:</strong>
+              <ul>
+                <li th:each="robot : ${mision.robotsParticipantes}" th:text="${robot.nombre}"></li>
+              </ul>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</body>
+</html>

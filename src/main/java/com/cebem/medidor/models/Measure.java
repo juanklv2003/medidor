@@ -25,6 +25,7 @@ public class Measure {
     private double temp;
     private double humidity;
     private double solarRadiation;
+    private double atmosphericPressure;
     private String mac;
 
 @Column(updatable = false)
