@@ -1,44 +1,29 @@
 package com.cebem.medidor.models;
 
-import java.util.List;
 
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.ManyToMany;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import lombok.Data;
 
-@Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+import java.util.List;
+
 @Data
-public abstract class Robot {
+@Document(collection = "robots")
+public class Robot {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    private String id;
     private String nombre;
     private String modelo;
+    private String tipo;  // asalto, defensa, espionaje, médico…
     private int energiaActual;
     private int energiaMaxima;
     private int nivel;
+    private List<String> habilidades;          // lista de habilidades
+    private String estado;                     // activo | dañado | destruido
+    private List<String> misionesRealizadas;  // IDs de misiones completadas
 
-    public enum EstadoRobot {
-    ACTIVO, DANADO, DESTRUIDO
-    };
-
-    @ElementCollection
-    private List<String> habilidades;
-
-    @Enumerated(EnumType.STRING)
-    private EstadoRobot estado;
-    
-    @ManyToMany(mappedBy = "robotsParticipantes")
-    private List<Mision> misionesRealizadas;
 }
+
+

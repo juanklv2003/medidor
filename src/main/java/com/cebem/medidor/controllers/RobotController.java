@@ -1,57 +1,56 @@
 package com.cebem.medidor.controllers;
 
+import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.cebem.medidor.models.Robot;
-import com.cebem.medidor.repositories.RobotRepository;
+import com.cebem.medidor.service.RobotService;
+import org.springframework.ui.Model;
 
-import java.util.List;
 
 @Controller
 @RequestMapping("/robots")
 public class RobotController {
 
-    private final RobotRepository robotRepository;
+    private final RobotService robotService;
 
-    public RobotController(RobotRepository robotRepository) {
-        this.robotRepository = robotRepository;
-    }
-
-    @GetMapping
-    public String listarRobots(Model model) {
-        List<Robot> robots = robotRepository.findAll();
-        model.addAttribute("robots", robots);
-        return "robot";  // Thymeleaf buscará templates/robots.html
+    public RobotController(RobotService robotService) {
+        this.robotService = robotService;
     }
 
     @PostMapping
-    @ResponseBody
-    public Robot crearRobot(@RequestBody Robot robot) {
-        return robotRepository.save(robot);
+    public ResponseEntity<Robot> crearRobot(@RequestBody Robot robot) {
+        Robot creado = robotService.crearRobot(robot);
+        return ResponseEntity.ok(creado);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Robot>> listarRobots() {
+        List<Robot> lista = robotService.listarRobots();
+        return ResponseEntity.ok(lista);
     }
 
     @PatchMapping("/{id}/recargar")
-    @ResponseBody
-    public Robot recargarEnergia(@PathVariable Long id) {
-        return robotRepository.findById(id)
-            .map(robot -> {
-                robot.setEnergiaActual(robot.getEnergiaMaxima());
-                return robotRepository.save(robot);
-            })
-            .orElse(null);
+    public ResponseEntity<Robot> recargarEnergia(@PathVariable String id) {
+        Robot robot = robotService.recargarEnergia(id);
+        return ResponseEntity.ok(robot);
     }
 
     @PatchMapping("/{id}/subir-nivel")
-    @ResponseBody
-    public Robot subirNivel(@PathVariable Long id) {
-        return robotRepository.findById(id)
-            .map(robot -> {
-                robot.setNivel(robot.getNivel() + 1);
-                return robotRepository.save(robot);
-            })
-            .orElse(null);
+    public ResponseEntity<Robot> subirNivel(@PathVariable String id) {
+        Robot robot = robotService.subirNivel(id);
+        return ResponseEntity.ok(robot);
     }
+
+@GetMapping("/listar")
+public String listarRobots(Model model) {
+    List<Robot> robots = robotService.listarRobots();
+    model.addAttribute("robots", robots);
+    return "robots"; // archivo robots.html en templates
 }
+
+}
+

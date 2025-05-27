@@ -1,6 +1,6 @@
 package com.cebem.medidor.controllers;
 
-
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -9,51 +9,45 @@ import org.springframework.web.bind.annotation.*;
 
 import com.cebem.medidor.models.Mision;
 import com.cebem.medidor.models.Robot;
-import com.cebem.medidor.repositories.MisionRepository;
-import com.cebem.medidor.repositories.RobotRepository;
-
-import java.util.List;
+import com.cebem.medidor.service.MisionService;
+import com.cebem.medidor.service.RobotService;
 
 @Controller
 @RequestMapping("/misiones")
 public class MisionController {
 
-    private final MisionRepository misionRepository;
-    private final RobotRepository robotRepository;
+    private final MisionService misionService;
+    private final RobotService robotService;
 
-    public MisionController(MisionRepository misionRepository, RobotRepository robotRepository) {
-        this.misionRepository = misionRepository;
-        this.robotRepository = robotRepository;
-    }
-
-    @GetMapping
-    public String listarMisiones(Model model) {
-        List<Mision> misiones = misionRepository.findAll();
-        model.addAttribute("misiones", misiones);
-        return "mision";  // Thymeleaf buscará templates/misiones.html
+    public MisionController(MisionService misionService, RobotService robotService) {
+        this.misionService = misionService;
+        this.robotService = robotService;
     }
 
     @PostMapping
-    @ResponseBody
-    public Mision crearMision(@RequestBody Mision mision) {
-        return misionRepository.save(mision);
+    public ResponseEntity<Mision> crearMision(@RequestBody Mision mision) {
+        Mision creada = misionService.crearMision(mision);
+        return ResponseEntity.ok(creada);
     }
 
- @PatchMapping("/{id}/asignar-robot")
-public ResponseEntity<Mision> asignarRobot(@PathVariable Long id, @RequestParam Long robotId) {
-    var misionOpt = misionRepository.findById(id);
-    var robotOpt = robotRepository.findById(robotId);
-
-    if (misionOpt.isEmpty() || robotOpt.isEmpty()) {
-        return ResponseEntity.notFound().build();
+    @GetMapping
+    public ResponseEntity<List<Mision>> listarMisiones() {
+        List<Mision> lista = misionService.listarMisiones();
+        return ResponseEntity.ok(lista);
     }
 
-    Mision mision = misionOpt.get();
-    Robot robot = robotOpt.get();
+    @PatchMapping("/{id}/asignar-robot")
+    public ResponseEntity<Mision> asignarRobot(@PathVariable String id, @RequestParam String robotId) {
+        Mision misionActualizada = misionService.asignarRobotAMision(id, robotId);
+        return ResponseEntity.ok(misionActualizada);
+    }
 
-    mision.getRobotsParticipantes().add(robot);
-    Mision actualizada = misionRepository.save(mision);
-
-    return ResponseEntity.ok(actualizada);
-}
+    @GetMapping("/listar")
+    public String listarMisiones(Model model) {
+        List<Mision> misiones = misionService.listarMisiones();
+        List<Robot> robots = robotService.listarRobots();
+        model.addAttribute("misiones", misiones);
+        model.addAttribute("robots", robots);
+        return "misiones";  // nombre del template sin extensión
+    }
 }
